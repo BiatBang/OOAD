@@ -1,7 +1,102 @@
 public abstract class Instrument{
     private String price;
     private String serialNumber;
+    private InstrumentSpec instrumentSpec; // no need to specify here
     
-    public Instrument(){}
+    // abstract can have construct method, cant be initialized
+    public Instrument(...){}
     
+    // some getters and setters here
+}
+
+public abstract class InstrumentSpec{
+    private String model;
+    private String builder;
+    private String wood;
+    
+    public InstrumentSpec(String model, String builder, String wood){
+        this.model = model;
+        this.builder = builder;
+        this.wood = wood;
+    }
+    
+    // getters
+    
+    public boolean matches(InstrumentSpec spec){
+       // notice! here are only comparasions among general properties,
+       // concrete instrument has it's own properties to compare in subclasses
+       
+       if(this.model != null && this.model.length() != 0 && !spec.model.equals(this.model)) return false;
+       // other two properties
+       
+       return true;
+    }
+}
+
+public class GuitarSpec extends InstrumentSpec{
+    private int numStrings; // exclusive
+    
+    public GuitarSpec(String model, String builder, String wood, String numStrings){
+        super(model, builder, wood);
+        this.numStrings = numStrings;
+    }
+    
+    public boolean matches(InstrumentSpec spec){
+        if(!super.matches(spec)) return false; // first let father check
+        if(!spec instanceof GuitarSpec) return false; // at least Class must match
+        if(!this.numStrings.equals((GuitarSpec)spec.getNumStrings()) return false // check exclusive properties
+        return true;
+    }
+}
+
+// let 2 instruments extends Instrument
+public class Guitar extends Instrument{
+    public Guitar(String serialNumber, String price, GuitarSpec spec){
+        super(serialNumber, price, spec);
+    }
+}
+
+public class Violin extends Instrument{
+    public Violin(String serialNumber, String price, ViolinSpec spec){
+        super(serialNumber, price, spec);
+    }
+}
+
+public class Inventory{
+    private List<Instrument> inventory;
+    
+    public Inventory(){
+        this.inventory = new ArrayList<>();
+    }
+    
+    public void addInstrument(String serialNumber, String price, InstrumentSpec spec){
+        Instrument instrument = null; // see, no need to specify what instrument this is
+        if(spec instanceof GuitarSpec) instrument = new Guitar(serialNumber, price, (GuitarSpec)spec);
+        else if(spec instanceof ViolinSpce) instrument = new Violin(serialNumber, price, (ViolinSpce)spec);
+        
+        inventory.add(instrument);
+    }
+    
+    public void get(String serialNumber){
+        // to iterate, head first strongly recommand using iterator instead of syntactic sugar(for-each). reasonable
+        for(Iterator i = inventory.iterator(); i.hasNext(); ){
+            Instrument instrument = (Instrument)i.next();
+            if(instrument.getSerialNumber.equals(serialNumber)) return instrument;            
+        }
+        return null;
+    }
+    
+    // here we use polymorphism which is where I hold my opinion
+    public List<Guitar> search(GuitarSpec spec){
+        List<Guitar> guitarList = new ArrayList<>();
+        for(Iterator i = inventory.iterator(); i.hasNext(); ){
+            Guitar intrument = (Guitar)i.next();  // this is really tricky
+            if(instrument.getSpec().matches(spec)) guitarList.add(instrument);
+        }
+        return guitarList();
+    }
+    
+    public List search(ViolinSpec spec){
+        // same ^_^
+    }
 }
