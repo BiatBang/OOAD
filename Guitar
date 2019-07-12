@@ -1,0 +1,7 @@
+public abstract class Instrument{
+    private String price;
+    private String serialNumber;
+    
+    public Instrument(){}
+    
+}
