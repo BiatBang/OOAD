@@ -1,3 +1,74 @@
 public class Board{
+    // initially, we only know board needs a size, and list of tiles
+    private int height, width;
+    private List tiles;
+    
+    public Board(int width, int height){
+        this.width = width;
+        this.height = height;
+        initialize();
+    }
+    
+    public void initialize(){
+        tiles = new ArrayList<>();
+        for(int i = 0; i < width; i++){
+            tiles.add(new ArrayList<Tile>(height));
+            for(int j = 0; j < height; j++){
+                tiles.get(i).add(j, new Tile());
+            }
+        }
+    }
+    
+    // some operations with tile, very simple ones
+    public Tile getTile(int x, int y){
+        return this.tiles.get(x - 1).get(y - 1);
+    }
+    
+    // I think this should be modified later
+    public void addUnit(Unit unit, int x, int y){
+        Tile tile = getTile(x, y);
+        tile.addUnit(unit);
+    }
+    
+    public void removeUnit(Unit unit, int x, int y){
+        Tile tile = getTile(x, y);
+        tile.removeUnit(unit);
+    }
+    
+    public void removeUnits(int x, int y){
+        Tile tile = getTile(x, y);
+        tile.removeUnits();
+    }
+    
+    public List getUnits(int x, int y){
+        return getTile(x, y).getUnits();
+    }
+}
 
+
+// board consists of tiles
+
+public class Tile{
+    private List<Unit> units;
+    
+    public Tile(){
+        units = new ArrayList<Unit>();        
+    }
+    
+    public void addUnit(Unit unit){
+        units.add(unit);
+    }
+    
+    public void removeUnit(Unit unit){
+        units.remove(unit);
+    }
+}
+
+// tile consists of unit
+// 'cause diversity will reduce lots and lots of different classes,
+// to avoid this, eliminate diversity
+// use map to encapsulate properties
+// or, there would be 100, 1000 kinds of units, then we'll need 100, 1000 + 1 kinds of classes
+public class Unit{
+    
 }
