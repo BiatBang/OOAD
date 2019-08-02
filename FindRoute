@@ -1,0 +1,131 @@
+public class Station{
+    private String name;
+    
+    public Station(String name){
+        this.name = name;
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
+    public boolean equalsTo(Object obj){
+        if(obj instanceof Station){
+            Station other = (Station)obj;
+            if(other.getName().equalsIgnoreCase(this.name)) return ture;
+        }
+        return false;
+    }
+    
+    public int hashCode(){
+        // turns out return type of hashCode is int
+        return name.toLowerCase().hashCode();
+    }
+}
+
+public class Connection{
+    private Station s1, s2;
+    private String lineName;
+    // here comes the problem: what if a connection is shared by two or more lines?
+    
+    public Connection(Station s1, Station s2, String lineName){
+        this.s1 = s1;
+        this.s2 = s2;
+        this.lineName = lineName;
+    }
+    
+    // three getters
+}
+
+public class Subway{
+    // subway is a system of underground trains, not a train
+    private List stations;
+    private List connections;
+    
+    public Subway(){
+        this.station = new LinkedList(); // or arrayList?
+        this.connections = new LinkedList();
+    }
+    
+    public boolean hasStation(String stationName){
+        return this.stations.contains(new Station(stationName));
+    }
+    
+    public void addStation(String stationName){
+        if(!this.hasStation(stationName)){
+            Station station = new Station(stationName);
+            stations.add(station);
+        }
+    }
+    
+    public void addConnection(String stationName1, String stationName2, String lineName){
+        if(this.hasStation(stationName1) && this.hasStation(stationName2)){
+            Station s1 = new Station(stationName1);
+            Station s2 = new Station(stationName2);
+            Connection con = new Connection(s1, s2, lineName);
+            Connection recon = new Connection(s2, s2, lineName);
+            connections.add(con);
+            connections.add(recon);
+        }else{
+            throw new RuntimeException("Invalid connection"); // why so violet?
+        }
+    }
+}
+
+public class SubwayLoader{
+    private Subway subway;  // onlye one subway exists, maybe we should consider singleton pattern
+    
+    public SubwayLoader(Subway subway){
+        this.subway = subway;
+    }
+    
+    public Subway loadFromFile(File subwayFile) throws IOException{
+        // use this to build an initial subways system, then this is a subway factory;
+        BufferedReader reader = new Bufferedreader(new FileReader(subwayFile));
+        
+        // the structure of file is
+        // ***
+        // stations
+        //
+        // A Line
+        // s1
+        // s2
+        //
+        // B Line
+        // s1
+        // s2
+        // ...
+        // ***
+        
+        // firstly, load all stations
+        loadStations(subway, reader);
+        
+        // next, read lines(subway lines) one by one
+        line = reader.readLine();
+        while(line != null && line.length() != 0){
+            loadLine(subway, line, reader);
+            line = reader.readLine();
+        }
+        
+        return subway;
+    }
+    
+    public void loadStations(Subway subway, BufferedReader reader) throws IOException{
+        String cur = reader.readLine();
+        while(cur != null && cur.length() != 0){
+            subway.addStation(cur);
+            cur = reader.readLine();
+        }
+    }
+    
+    public void loadLine(Subway subway, String line, BufferedReader reader) throws IOException{
+        // add this series of stations to a line full of connections
+        String s1 = reader.readLine();
+        String s2 = reader.readLine();
+        while(s2 != null && s2.length() != 0){
+            subway.addConnection(s1, s2, line);
+            s1 = s2;
+            s2 = reader.readLine();
+        }
+    }
+}
